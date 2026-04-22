@@ -54,7 +54,7 @@ Only the UI port is exposed to the host. All inter-service traffic stays on the 
 
 ## Configuration
 
-Everything is configured via environment variables in `.env`. See [`.env.example`](.env.example) for the full list.
+Everything is configured via environment variables in `.env`. See [`.env.example`](.env.example) for the operator-facing list.
 
 Most common overrides:
 
@@ -64,6 +64,8 @@ UI_PORT=8080                             # change if 3080 is taken
 SECURE_COOKIES=true                      # enable when behind HTTPS
 TAG=v0.1.0                               # pin to a specific release
 ```
+
+Rolling back a subsystem (Redis, informers, etc.) or tuning performance knobs? See [`docs/ADVANCED.md`](docs/ADVANCED.md).
 
 ## Upgrading
 

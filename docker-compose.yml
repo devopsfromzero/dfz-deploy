@@ -19,6 +19,10 @@
 #   (dfz_backend / dfz_terminal) enforces schema-level least-privilege.
 #   Override by setting PG_PASSWORD in .env to enable password auth.
 #
+# Every backend feature flag defaults to ON in the image. To roll back
+# a specific subsystem (e.g. USE_REDIS_CACHE=false), add the override
+# to .env and run `docker compose up -d`. Full catalog: docs/ADVANCED.md
+#
 # Source repository (private): https://github.com/devopsfromzero/dfz-src
 # Image registry (public):     https://github.com/devopsfromzero?tab=packages
 
@@ -35,19 +39,16 @@ services:
     environment:
       - ENVIRONMENT=production
       - LOG_LEVEL=${LOG_LEVEL:-WARNING}
-      - ENABLE_DEBUG_LOGS=false
 
-      # Token settings
+      # Tokens + cookies
       - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES:-120}
       - REFRESH_TOKEN_EXPIRE_DAYS=${REFRESH_TOKEN_EXPIRE_DAYS:-7}
       - ALGORITHM=HS256
       - ENABLE_TOKEN_ROTATION=${ENABLE_TOKEN_ROTATION:-false}
-
-      # Cookie security
       - SECURE_COOKIES=${SECURE_COOKIES:-false}
       - COOKIE_SAMESITE=${COOKIE_SAMESITE:-lax}
 
-      # CORS — must match your external access URL
+      # CORS — must match the URL the browser uses
       - CORS_ALLOWED_ORIGINS=${APP_URL:-http://localhost:3080}
 
       # PostgreSQL (internal network, trust auth)
@@ -57,44 +58,12 @@ services:
       - PG_POOL_MIN_SIZE=${PG_POOL_MIN_SIZE:-2}
       - PG_POOL_MAX_SIZE=${PG_POOL_MAX_SIZE:-20}
 
-      # Performance flags — all default ON; override to disable.
-      - THREAD_POOL_MAX_WORKERS=${THREAD_POOL_MAX_WORKERS:-64}
-      - SINGLEFLIGHT_ENABLED=${SINGLEFLIGHT_ENABLED:-true}
-      - SWR_CACHE_ENABLED=${SWR_CACHE_ENABLED:-true}
-      - DASHBOARD_SNAPSHOT_JOB_ENABLED=${DASHBOARD_SNAPSHOT_JOB_ENABLED:-true}
-      - RBAC_CACHE_ENABLED=${RBAC_CACHE_ENABLED:-true}
-
-      # Redis cache (falls back to in-memory if unreachable)
+      # Redis (falls back to in-memory if unreachable)
       - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
       - REDIS_MAX_CONNECTIONS=${REDIS_MAX_CONNECTIONS:-50}
-      - USE_REDIS_CACHE=${USE_REDIS_CACHE:-true}
 
-      # Async K8s + pagination
-      - USE_DISTRIBUTED_SINGLEFLIGHT=${USE_DISTRIBUTED_SINGLEFLIGHT:-true}
-      - USE_BACKEND_PAGINATION=${USE_BACKEND_PAGINATION:-true}
-      - USE_ASYNC_K8S_PODS=${USE_ASYNC_K8S_PODS:-true}
-      - USE_ASYNC_K8S_DEPLOYMENTS=${USE_ASYNC_K8S_DEPLOYMENTS:-true}
-      - USE_ASYNC_K8S_STATEFULSETS=${USE_ASYNC_K8S_STATEFULSETS:-true}
-      - USE_ASYNC_K8S_DAEMONSETS=${USE_ASYNC_K8S_DAEMONSETS:-true}
-      - USE_ASYNC_K8S_SERVICES=${USE_ASYNC_K8S_SERVICES:-true}
-      - USE_ASYNC_K8S_NAMESPACES=${USE_ASYNC_K8S_NAMESPACES:-true}
-      - USE_ASYNC_K8S_CONFIGMAPS=${USE_ASYNC_K8S_CONFIGMAPS:-true}
-      - USE_ASYNC_K8S_SECRETS=${USE_ASYNC_K8S_SECRETS:-true}
-      - USE_ASYNC_K8S_NODES=${USE_ASYNC_K8S_NODES:-true}
-      - USE_ASYNC_K8S_METRICS=${USE_ASYNC_K8S_METRICS:-true}
-      - USE_ASYNC_K8S_REPLICASETS=${USE_ASYNC_K8S_REPLICASETS:-true}
-      - USE_ASYNC_K8S_JOBS=${USE_ASYNC_K8S_JOBS:-true}
-      - USE_ASYNC_K8S_CRONJOBS=${USE_ASYNC_K8S_CRONJOBS:-true}
-
-      # Informer cache + SSE push
-      - USE_INFORMER_CACHE=${USE_INFORMER_CACHE:-true}
-      - USE_SSE_PUSH=${USE_SSE_PUSH:-true}
-      - INFORMER_PODS_ENABLED=${INFORMER_PODS_ENABLED:-true}
-      - INFORMER_DEPLOYMENTS_ENABLED=${INFORMER_DEPLOYMENTS_ENABLED:-true}
-      - INFORMER_SERVICES_ENABLED=${INFORMER_SERVICES_ENABLED:-true}
-      - INFORMER_NAMESPACES_ENABLED=${INFORMER_NAMESPACES_ENABLED:-true}
-      - INFORMER_STATEFULSETS_ENABLED=${INFORMER_STATEFULSETS_ENABLED:-true}
-      - INFORMER_DAEMONSETS_ENABLED=${INFORMER_DAEMONSETS_ENABLED:-true}
+      # Resource tuning
+      - THREAD_POOL_MAX_WORKERS=${THREAD_POOL_MAX_WORKERS:-64}
       - INFORMER_PROCESS_SOFT_LIMIT_MB=${INFORMER_PROCESS_SOFT_LIMIT_MB:-1500}
       - INFORMER_PROCESS_HARD_LIMIT_MB=${INFORMER_PROCESS_HARD_LIMIT_MB:-2000}
 
@@ -141,7 +110,6 @@ services:
     environment:
       - ENVIRONMENT=production
       - LOG_LEVEL=${LOG_LEVEL:-WARNING}
-      - ENABLE_DEBUG_LOGS=false
       - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES:-120}
       - REFRESH_TOKEN_EXPIRE_DAYS=${REFRESH_TOKEN_EXPIRE_DAYS:-7}
       - ALGORITHM=HS256
