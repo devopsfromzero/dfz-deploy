@@ -16,16 +16,7 @@ docker compose pull
 docker compose up -d
 ```
 
-Open http://localhost:3080 and sign in with the default credentials below.
-
-### Default credentials
-
-| Field    | Value    |
-|----------|----------|
-| Username | `admin`  |
-| Password | `admin`  |
-
-Change the password immediately from **Settings → Account** after first login.
+Open http://localhost:3080. On first launch you'll be prompted to create the admin account (username and password) — there is no default password to fall back on.
 
 ## Requirements
 

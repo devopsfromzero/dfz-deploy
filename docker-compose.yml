@@ -8,9 +8,10 @@
 #   docker compose up -d
 #   open http://localhost:3080
 #
-# Default credentials on first run:
-#   username: admin
-#   password: admin        # change immediately in Settings
+# First-run setup:
+#   The first time you open the UI, you'll be prompted to create
+#   the admin account (username and password). There is no default
+#   password to fall back on — pick something strong.
 #
 # Configuration:
 #   All tunables have sensible defaults baked into this file via
